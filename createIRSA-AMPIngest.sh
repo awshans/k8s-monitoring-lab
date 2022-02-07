@@ -1,5 +1,5 @@
 #!/bin/bash -e
-CLUSTER_NAME="eks-cls-1"
+CLUSTER_NAME="eksworkshop-eksctl"
 SERVICE_ACCOUNT_NAMESPACE=prometheus
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)

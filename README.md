@@ -86,9 +86,17 @@ echo "export AZS=(${AZS[@]})" | tee -a ~/.bash_profile
 aws configure set default.region ${AWS_REGION}
 aws configure get default.region
 ```
-###Attach IAM role to instance
 
-https://www.eksworkshop.com/020_prerequisites/ec2instance/
+### Install EKSCTL
+```bash
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+
+sudo mv -v /tmp/eksctl /usr/local/bin
+```
+### Install Helm
+```bash
+curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+```
 
 ### Validate the IAM role
 
@@ -99,6 +107,7 @@ aws sts get-caller-identity --query Arn | grep eksworkshop-admin -q && echo "IAM
 ```
 
 If the IAM role is not valid, <span style="color: red;">**DO NOT PROCEED**</span>. Go back and confirm the steps on this page.
+https://www.eksworkshop.com/020_prerequisites/ec2instance/
 
 ### Expand local drive
 
@@ -133,26 +142,30 @@ if [ $? -eq 0 ]; then
     sudo reboot
 fi
 ```
-    
+#### Connect to EKS Cluster 
+
+```bash
+aws eks update-kubeconfig --region us-west-2 --name eksworkshop-eksctl
+```
+
 ### Create Amazon Managed Prometheus
 
 ```bash
-aws amp create-workspace --alias eks-lab --region $AWS_REGION
+aws amp create-workspace --alias eks-workshop --region $AWS_REGION
 ```
-
-Edit `CLUSTER_NAME=""` in `createIRSA-AMPIngest` and `createIRSA-AMPQuery` then run
-
+Run the following scripts to set up required permission
 ```bash
-bash ./createIRSA-AMPIngest.sh
-bash ./createIRSA-AMPQuery.sh
+cd ~/environment
+bash ./k8s-monitoring-lab/createIRSA-AMPIngest.sh
+bash ./k8s-monitoring-lab/createIRSA-AMPQuery.sh
 ```
 
 ```bash
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
 kubectl create ns prometheus
 ```
 
-If you encounter an error deploying prometheus you may need to run the following command
 ### Create CRDs
 ```bash
 kubectl create -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/master/bundle.yaml
@@ -162,7 +175,7 @@ kubectl create -f https://raw.githubusercontent.com/prometheus-operator/promethe
 export SERVICE_ACCOUNT_IAM_ROLE=amp-iamproxy-ingest-role
 export SERVICE_ACCOUNT_IAM_ROLE_ARN=$(aws iam get-role --role-name $SERVICE_ACCOUNT_IAM_ROLE --query 'Role.Arn' --output text)
 
-WORKSPACE_ID=$(aws amp list-workspaces --alias eks-lab | jq .workspaces[0].workspaceId -r)
+WORKSPACE_ID=$(aws amp list-workspaces --alias eks-workshop | jq .workspaces[0].workspaceId -r)
 
 helm install prometheus-for-amp prometheus-community/prometheus -n prometheus -f ./amp_prometheus_values.yaml \
 --set serviceAccounts.server.annotations."eks\.amazonaws\.com/role-arn"="${SERVICE_ACCOUNT_IAM_ROLE_ARN}" \
@@ -172,7 +185,7 @@ helm install prometheus-for-amp prometheus-community/prometheus -n prometheus -f
 
 ### Create Amazon Managed Grafana
 
-use AWS console
+Use AWS console
 https://catalog.us-east-1.prod.workshops.aws/v2/workshops/31676d37-bbe9-4992-9cd1-ceae13c5116c/en-US/amg/setupamg-saml
 
 ### Install Loki and PromTail
@@ -254,9 +267,6 @@ https://grafana.com/grafana/dashboards/10856
 https://grafana.com/grafana/dashboards/10694
 https://grafana.com/grafana/dashboards/7249
 https://grafana.com/grafana/dashboards/3831
-
-### cleanup
-
 
 ### useful links
 
