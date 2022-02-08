@@ -185,7 +185,7 @@ helm install prometheus-for-amp prometheus-community/prometheus -n prometheus -f
 
 ### Create Amazon Managed Grafana
 
-Use AWS console
+Use AWS console.  
 https://catalog.us-east-1.prod.workshops.aws/v2/workshops/31676d37-bbe9-4992-9cd1-ceae13c5116c/en-US/amg/setupamg-saml
 
 ### Install Loki and PromTail
@@ -218,20 +218,20 @@ kubectl -n loki patch svc loki -p '{"spec": {"type": "LoadBalancer"}}'
 
 ```bash
 cd ~/environment
-git clone https://github.com/aws-containers/ecsdemo-frontend.git
-git clone https://github.com/aws-containers/ecsdemo-nodejs.git
-git clone https://github.com/aws-containers/ecsdemo-crystal.git
+git clone https://github.com/aws-containers/ecsdemo-frontend.git   
+git clone https://github.com/aws-containers/ecsdemo-nodejs.git   
+git clone https://github.com/aws-containers/ecsdemo-crystal.git  
 ```
 #### Deploy Applicaiton to EKS cluster
 
 ```bash
-kubectl apply -f ./ecsdemo-frontend/kubernetes/deployment.yaml
+kubectl apply -f ./ecsdemo-frontend/kubernetes/deployment.yaml  
 kubectl apply -f ./ecsdemo-frontend/kubernetes/service.yaml
 
-kubectl apply -f ./ecsdemo-nodejs/kubernetes/deployment.yaml
+kubectl apply -f ./ecsdemo-nodejs/kubernetes/deployment.yaml  
 kubectl apply -f ./ecsdemo-nodejs/kubernetes/service.yaml
 
-kubectl apply -f ./ecsdemo-crystal/kubernetes/deployment.yaml
+kubectl apply -f ./ecsdemo-crystal/kubernetes/deployment.yaml  
 kubectl apply -f ./ecsdemo-crystal/kubernetes/service.yaml
 ```
 
@@ -253,20 +253,20 @@ rate(container_cpu_usage_seconds_total{namespace=“default”[5m])
 
 sum by(container)(rate(container_cpu_usage_seconds_total{namespace="default"}[2m]))
 
-% Memory available
+% Memory available  
 ((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) or ((node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes) / node_memory_MemTotal_bytes)) * 100
 
-% CPU utilization
+% CPU utilization  
 1 - avg without (mode,cpu) (rate(node_cpu_seconds_total{mode="idle"}[5m]))
 
 ####  Dashboards to import into Grafana
 
-https://grafana.com/grafana/dashboards/1860
-https://grafana.com/grafana/dashboards/10842
-https://grafana.com/grafana/dashboards/10856
-https://grafana.com/grafana/dashboards/10694
-https://grafana.com/grafana/dashboards/7249
-https://grafana.com/grafana/dashboards/3831
+https://grafana.com/grafana/dashboards/1860     
+https://grafana.com/grafana/dashboards/10842  
+https://grafana.com/grafana/dashboards/10856  
+https://grafana.com/grafana/dashboards/10694  
+https://grafana.com/grafana/dashboards/7249  
+https://grafana.com/grafana/dashboards/3831  
 
 ### useful links
 
